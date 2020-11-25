@@ -51,7 +51,8 @@ scoringutils::render_scoring_report(truth_data = truth_data,
                                                   forecast_dates = forecast_dates,
                                                   horizons = 1:4, 
                                                   target_types = c("case", "death")),
-                                    save_dir = "report/")
+                                    save_dir = "report/", 
+                                    filename = "index.html")
 
 
 

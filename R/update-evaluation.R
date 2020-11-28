@@ -8,6 +8,9 @@ load_from_server <- TRUE
 locations <- c("Germany", "Poland")
 forecast_dates <- c("2020-10-12", "2020-10-19", "2020-10-26", "2020-11-02",
                     "2020-11-09", "2020-11-16", "2020-11-23")
+forecast_dates2 <- as.character(c((as.Date(forecast_dates) - 1)))
+all_forecast_dates <- as.character(c(forecast_dates, forecast_dates2))
+
 target_types <- c("case", "death")
 
 
@@ -19,14 +22,31 @@ system("bash bin/update-forecasts-svn.sh")
 # load forecast data -----------------------------------------------------------
 source("R/load-data.R")
 
-prediction_data <- load_submission_files(dates = forecast_dates,
+prediction_data <- load_submission_files(dates = all_forecast_dates,
                                          models = models,
                                          dir = root_dir) %>%
   dplyr::filter(target_end_date >= "2020-10-17") %>%
+  dplyr::mutate(location_name = ifelse(location == "GM", 
+                                       "Germany", 
+                                       ifelse(location == "PL", 
+                                              "Poland", 
+                                              location_name))) %>%
   dplyr::select(-location) %>%
   dplyr::filter(type == "quantile") %>%
+  dplyr::mutate(forecast_date = as.character(forecast_date)) %>%
   dplyr::mutate(target_type = ifelse(grepl("death", target), "death", "case")) %>%
   dplyr::rename(prediction = value)
+
+# make forecast dates match 
+for (date in 1:length(forecast_dates)) {
+prediction_data <- prediction_data %>%
+  dplyr::mutate(forecast_date = ifelse(forecast_date == forecast_dates2[date], 
+                       forecast_dates[date], 
+                       forecast_date))
+}
+
+
+
 
 get_data(load_from_server = load_from_server,
          country = "Germany_Poland")
@@ -44,17 +64,17 @@ truth_data <- dplyr::bind_rows(obs_death %>%
 
 
 
-
 scoringutils::render_scoring_report(truth_data = truth_data, 
                                     prediction_data = prediction_data,
                                     params = list(locations = locations, 
                                                   forecast_dates = forecast_dates,
                                                   horizons = 1:4, 
                                                   target_types = c("case", "death")),
-                                    save_dir = "report/", 
+                                    save_dir = "docs/", 
                                     filename = "index.html")
 
 
 
 
-
+prediction_data %>%
+  dplyr::filter(grepl("DELPH", model))

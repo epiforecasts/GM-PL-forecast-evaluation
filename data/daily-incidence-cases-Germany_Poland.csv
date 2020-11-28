@@ -330,6 +330,9 @@ date,location,location_name,value
 2020-11-23,GM,Germany,10864
 2020-11-24,GM,Germany,13554
 2020-11-25,GM,Germany,18633
+2020-11-26,GM,Germany,22268
+2020-11-27,GM,Germany,22806
+2020-11-28,GM,Germany,21695
 2020-03-04,PL,Poland,1
 2020-03-07,PL,Poland,4
 2020-03-08,PL,Poland,1
@@ -595,3 +598,6 @@ date,location,location_name,value
 2020-11-23,PL,Poland,17856
 2020-11-24,PL,Poland,15002
 2020-11-25,PL,Poland,32733
+2020-11-26,PL,Poland,15356
+2020-11-27,PL,Poland,16690
+2020-11-28,PL,Poland,17304

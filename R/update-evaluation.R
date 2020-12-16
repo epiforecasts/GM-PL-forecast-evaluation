@@ -7,7 +7,8 @@ root_dir <- "../data-processed" # root directory for the submission files
 load_from_server <- TRUE
 locations <- c("Germany", "Poland")
 forecast_dates <- c("2020-10-12", "2020-10-19", "2020-10-26", "2020-11-02",
-                    "2020-11-09", "2020-11-16", "2020-11-23")
+                    "2020-11-09", "2020-11-16", "2020-11-23", "2020-11-30", 
+                    "2020-12-7", "2020-12-14")
 forecast_dates2 <- as.character(c((as.Date(forecast_dates) - 1)))
 all_forecast_dates <- as.character(c(forecast_dates, forecast_dates2))
 
@@ -35,7 +36,8 @@ prediction_data <- load_submission_files(dates = all_forecast_dates,
   dplyr::filter(type == "quantile") %>%
   dplyr::mutate(forecast_date = as.character(forecast_date)) %>%
   dplyr::mutate(target_type = ifelse(grepl("death", target), "death", "case")) %>%
-  dplyr::rename(prediction = value)
+  dplyr::rename(prediction = value) %>%
+  dplyr::mutate(location = location_name)
 
 # make forecast dates match 
 for (date in 1:length(forecast_dates)) {
@@ -60,7 +62,8 @@ truth_data <- dplyr::bind_rows(obs_death %>%
                                obs_case %>%
                                  dplyr::mutate(target_type = "case")) %>%
   dplyr::rename(true_value = value) %>%
-  dplyr::filter(target_end_date > (Sys.Date() - 16 * 7))
+  dplyr::filter(target_end_date > (Sys.Date() - 16 * 7)) %>%
+  dplyr::mutate(location = location_name)
 
 
 
@@ -75,6 +78,3 @@ scoringutils::render_scoring_report(truth_data = truth_data,
 
 
 
-
-prediction_data %>%
-  dplyr::filter(grepl("DELPH", model))
